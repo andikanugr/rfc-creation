@@ -1,0 +1,25 @@
+{
+  "name": "rfc-creation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andikanugr/rfc-creation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andikanugr/rfc-creation/issues"
+  },
+  "homepage": "https://github.com/andikanugr/rfc-creation#readme",
+  "dependencies": {
+    "@actions/core": "^1.9.1",
+    "@octokit/action": "^4.0.8",
+    "dg-action-tools": "^0.0.11"
+  }
+}
