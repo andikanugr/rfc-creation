@@ -111,11 +111,12 @@ async function createRFC(obj){
             "id": cahngeStadard,
         },
 
-        // CAB
-        "customfield_12748": CABs,
-
         // EIC
         "customfield_12277": EICs,
+
+        // CAB
+        // "customfield_12748": CABs,
+        "customfield_11784": CABs,
 
         // Product Owner
         "customfield_11783": POs,
