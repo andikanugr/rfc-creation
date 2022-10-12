@@ -1,4 +1,6 @@
 const { Member, Sheet, Slack, Jira } = require("dg-action-tools");
+const dotenv = require('dotenv');
+dotenv.config();
 
 
 const slackChannel = process.env.SLACK_CHANNEL
