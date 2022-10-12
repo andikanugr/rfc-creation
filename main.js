@@ -41,7 +41,7 @@ const sheet = new Sheet(keys, sheetId)
 const jira = new Jira(jiraToken, jiraEmail, jiraHost)
 
 
-async function main(){
+async function main() {
     console.log("Checking task ready for RFC")
     const deploymentLog = await sheet.batchGet("deployment log!A1:Q10")
     const deploymentLogObjs = sheet.valuesToObjects(deploymentLog)
@@ -58,10 +58,10 @@ async function main(){
 
 async function getReadyForRFCLog(obj, i) {
     let rowNum = i + 2
-    if(obj.Status == "RFC"){
+    if (obj.Status == "RFC") {
         const task = await createRFC(obj)
-        if(task.success){
-            obj.Status = "DEP"
+        if (task.success) {
+            obj.Status = "FUA"
             obj.RFC = `${jiraHost}/browse/${task.key}`
             await updateDeploymentLog(rowNum, obj)
             await updateThread(obj)
@@ -71,29 +71,29 @@ async function getReadyForRFCLog(obj, i) {
     }
 }
 
-async function createRFC(obj){
+async function createRFC(obj) {
     // eic
     let EICs = []
     const EIC = obj.EIC.split(",")
     EIC.map(v => {
-        if(member.getJiraFromGithub(v)) EICs.push({"accountId": member.getJiraFromGithub(v)})
+        if (member.getJiraFromGithub(v)) EICs.push({ "accountId": member.getJiraFromGithub(v) })
     })
 
     // cab
     let CABs = []
     const CAB = member.getCAB()
-    CAB.map(v => CABs.push({"accountId": v}))
-    
+    CAB.map(v => CABs.push({ "accountId": v }))
+
     // po
     let POs = []
     const PO = member.getPO()
-    PO.map(v => POs.push({"accountId": v}))
+    PO.map(v => POs.push({ "accountId": v }))
 
     const tasks = obj.Tasks.split(",")
     let linked = []
     await Promise.all(tasks.map(async v => {
         const statusTask = await jira.getStatus(v)
-        if(statusTask && (statusTask.status.id == jiraStatusReadyForApproval || statusTask.status.id == jiraStatusDone)){
+        if (statusTask && (statusTask.status.id == jiraStatusReadyForApproval || statusTask.status.id == jiraStatusDone)) {
             linked.push(v)
         }
     }))
@@ -246,23 +246,28 @@ async function createRFC(obj){
     return await jira.createTask(data, linked)
 }
 
-async function updateDeploymentLog(i, obj){
+async function updateDeploymentLog(i, obj) {
     await sheet.updateValue(`A${i}`, obj)
 }
 
-async function updateThread(obj){
+async function updateThread(obj) {
     obj.PIC = member.getSlackFromGithub(obj.PIC)
     await slack.DGupdateDeploymentThread(slackChannel, obj.Thread, obj)
 }
 
-function informRFCResult(obj, task){
+function informRFCResult(obj, task) {
     let msg
     const pic = member.getSlackFromGithub(obj.PIC)
-    if(task.success){
-        msg = `RFC created please continue to the next step <@${pic}>`
-    }else{
+    const cabs = member.getCAB()
+    let cabsMessage = ''
+    for (let i = 0; i < cabs.length; i++) {
+        cabsMessage += `<@${member.getSlackFromJira(cabs[i])}> `
+    }
+    if (task.success) {
+        msg = `RFC created please review `+ cabsMessage
+    } else {
         msg = `Failed to create RFC please check! <@${pic}>`
-        msg += "\n```" + JSON.stringify(task) + "```" 
+        msg += "\n```" + JSON.stringify(task) + "```"
     }
     slack.replyThread(slackChannel, obj.Thread, msg)
 }
