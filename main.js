@@ -257,10 +257,11 @@ async function updateThread(obj){
 
 function informRFCResult(obj, task){
     let msg
+    const pic = member.getSlackFromGithub(obj.PIC)
     if(task.success){
-        msg = `RFC created please continue to the next step <@${obj.PIC}>`
+        msg = `RFC created please continue to the next step <@${pic}>`
     }else{
-        msg = `Failed to create RFC please check! <@${obj.PIC}>`
+        msg = `Failed to create RFC please check! <@${pic}>`
         msg += "\n```" + JSON.stringify(task) + "```" 
     }
     slack.replyThread(slackChannel, obj.Thread, msg)
