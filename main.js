@@ -42,6 +42,7 @@ const jira = new Jira(jiraToken, jiraEmail, jiraHost)
 
 
 async function main(){
+    console.log("Checking task ready for RFC")
     const deploymentLog = await sheet.batchGet("deployment log!A1:Q10")
     const deploymentLogObjs = sheet.valuesToObjects(deploymentLog)
 
@@ -66,6 +67,7 @@ async function getReadyForRFCLog(obj, i) {
             await updateThread(obj)
         }
         informRFCResult(obj, task)
+        console.log("Finish:", obj.Service, task.success)
     }
 }
 
