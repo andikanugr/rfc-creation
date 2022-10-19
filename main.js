@@ -93,8 +93,12 @@ async function createRFC(obj) {
     let linked = []
     await Promise.all(tasks.map(async v => {
         const statusTask = await jira.getStatus(v)
-        if (statusTask && (statusTask.status.id == jiraStatusReadyForApproval || statusTask.status.id == jiraStatusDone)) {
-            linked.push(v)
+        if (statusTask){
+            if(statusTask.status.id == jiraStatusReadyForApproval){
+                linked.unshift(v)
+            } else if(statusTask.status.id == jiraStatusDone){
+                linked.push(v)
+            }
         }
     }))
 
