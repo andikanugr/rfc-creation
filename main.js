@@ -65,6 +65,11 @@ async function getReadyForRFCLog(obj, i) {
             obj.RFC = `${jiraHost}/browse/${task.key}`
             await updateDeploymentLog(rowNum, obj)
             await updateThread(obj)
+        }else if(task.ready == 0) {
+            obj.Counter = 0
+            obj.Status = "FUT"
+            await updateDeploymentLog(rowNum, obj)
+            await updateThread(obj)
         }
         informRFCResult(obj, task)
         console.log("Finish:", obj.Service, task.success)
@@ -91,16 +96,26 @@ async function createRFC(obj) {
 
     const tasks = obj.Tasks.split(",")
     let linked = []
+    let countReady = 0
     await Promise.all(tasks.map(async v => {
         const statusTask = await jira.getStatus(v)
         if (statusTask){
             if(statusTask.status.id == jiraStatusReadyForApproval){
+                countReady += 1
                 linked.unshift(v)
             } else if(statusTask.status.id == jiraStatusDone){
                 linked.push(v)
             }
         }
     }))
+
+    if(countReady < 1){
+        return {
+            success : false,
+            message: "Linked issues must be issues in status Ready for Approval (status back to FUT)",
+            ready: 0
+        }
+    }
 
     const data = {
         "project": {
