@@ -14,7 +14,7 @@ const jiraToken = process.env.JIRA_TOKEN
 const jiraEmail = process.env.JIRA_EMAIL
 const jiraHost = process.env.JIRA_HOST
 
-const projejectId = "10361"
+const projejectId = process.env.JIRA_PROJECTID
 const issueTypeRFC = "10517"
 const cahngeStadard = "16612"
 const versionTypeMinor = "16617"
@@ -23,16 +23,7 @@ const riskLevelMedium = "17987"
 const jiraStatusReadyForApproval = "10181"
 const jiraStatusDone = "10087"
 
-const servicesObj = {
-    b2binteg: "16069",
-    b2bpartner: "16101",
-    b2bfulfill: "16522",
-    b2bintegrationsandbox: "16504",
-    b2bintools: "16070",
-    digitalb2bcatalog: "15577",
-    digitalb2border: "15578",
-    digitalintoolsb2b: "15552"
-}
+const servicesObj = JSON.parse(process.env.SERVICES);
 
 let member = new Member([])
 
